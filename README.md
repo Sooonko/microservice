@@ -59,6 +59,7 @@ Hystrix circuit breaker is used to call the fallback method when orderService is
 2. Order Service - Create a new spring boot project to add items to cart, catalogueService makes a call to orderService for saving the item in cart.
 
 Show Items in cart - http://localhost:8082/api/orders/displayCart/A
+
 Make Payment - http://localhost:8082/api/orders/checkout/A
 
 For making payment, orderService calls PaymentSvc using Open Feign Client and resilience4j circuit breaker is used to call the fallback method when paymentService is down or not responding.
@@ -80,6 +81,7 @@ eureka:
 In Catalogue, Order and Payment Service, we need to add Eureka Client dependecy and register with eureka server. Registering individually is avoided using cloud config server.
 
 Now, we can invoke the service using the service name instead of IP and Port. 
+
 Like http://ORDERS-SERVICE/api/catalogue/addToCart
 
 5. API Gateway - 
@@ -91,7 +93,9 @@ Create a new Spring boot project, add spring-cloud-starter-gateway dependency. R
 All the routes of microservice is configured in the application.yml
 
 URL after adding API Gateway - 
+
 http://192.168.113.98:9191/api/catalogue/homepageCatalogue -- GET
+
 http://192.168.113.98:9191/api/catalogue/addToCart -- POST
 
 Payload - 
