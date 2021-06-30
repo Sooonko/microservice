@@ -11,7 +11,9 @@ Start Services in following order –
 URLs - 
 
 http://192.168.113.98:9191/api/catalogue/homepageCatalogue -- GET
+
 http://192.168.113.98:9191/api/catalogue/addToCart -- POST
+
 
 Payload - 
 {
@@ -39,6 +41,7 @@ Following services are present -
 
 1. Catalogue Service - Create a new spring boot project, to show all the products in the store.
 Show cart - http://localhost:8081/api/catalogue/homepageCatalogue
+
 Add to cart - http://localhost:8081/api/catalogue/addToCart
 
 payload - 
