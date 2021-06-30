@@ -1,7 +1,5 @@
-# microservices
-Microservices project using springboot.
+# Microservices sample application
 
-# microservices
 Microservices project using springboot.
 
 Start Services in following order – 
@@ -53,13 +51,14 @@ payload -
 }
 
 addToCart makes a post call to OrderService for saving the items in cart using restTemplate.
+Hystrix circuit breaker is used to call the fallback method when orderService is not working or responding
 
 2. Order Service - Create a new spring boot project to add items to cart, catalogueService makes a call to orderService for saving the item in cart.
 
 Show Items in cart - http://localhost:8082/api/orders/displayCart/A
 Make Payment - http://localhost:8082/api/orders/checkout/A
 
-For making payment, orderService calls PaymentSvc using Open Feign Client.
+For making payment, orderService calls PaymentSvc using Open Feign Client and resilience4j circuit breaker is used to call the fallback method when paymentService is down or not responding.
 
 3. Payment Service - Create a new spring boot project to facilitate payment
 
@@ -155,6 +154,4 @@ spring:
 
 build.txt file includes maven build steps
 start-all.bat starts all the services. 
-	  
-    
-
+	 
