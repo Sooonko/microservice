@@ -1,0 +1,16 @@
+server:
+  port: 9296
+
+eureka:  instance:    prefer-ip-address: true
+    instance-id: 
+    
+spring:
+  application:
+    name: CONFIG-SERVER
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/nithinurs46/config-server
+          clone-on-start: true
+        default-label: main

@@ -1,0 +1,13 @@
+server:
+  port: 8081
+
+spring:  application:    name: CATALOGUE-SERVICE
+  zipkin:
+    enabled: false
+  sleuth:
+    enabled: false
+    
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id:

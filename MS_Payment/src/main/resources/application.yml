@@ -1,0 +1,15 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: PAYMENT-SERVICE
+  zipkin:
+    enabled: false
+  sleuth:
+    enabled: false
+    
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id:

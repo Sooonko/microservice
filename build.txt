@@ -1,0 +1,6 @@
+mvn -f C:\work\Projects\eCommerce\SpringBoot\MS_ServiceRegistry -Dmaven.test.skip clean package
+mvn -f C:\work\Projects\eCommerce\SpringBoot\MS_CloudConfig -Dmaven.test.skip clean package
+mvn -f C:\work\Projects\eCommerce\SpringBoot\MS_CloudAPIGateway -Dmaven.test.skip clean package
+mvn -f C:\work\Projects\eCommerce\SpringBoot\MS_Catalogue -Dmaven.test.skip clean package
+mvn -f C:\work\Projects\eCommerce\SpringBoot\MS_Orders -Dmaven.test.skip clean package
+mvn -f C:\work\Projects\eCommerce\SpringBoot\MS_Payment -Dmaven.test.skip clean package

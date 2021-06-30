@@ -1,0 +1,25 @@
+server:
+  port: 9191
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id:
+    
+spring:
+  application:
+    name: CLOUD-API-GATEWAY
+  cloud:    gateway:      routes:      - id: CATALOGUE-SERVICE
+        uri: lb://CATALOGUE-SERVICE        predicates:        - Path=/api/catalogue/**
+      - id: ORDERS-SERVICE
+        uri: lb://ORDERS-SERVICE
+        predicates:
+        - Path=/api/orders/**
+      - id: PAYMENT-SERVICE
+        uri: lb://PAYMENT-SERVICE
+        predicates:
+        - Path=/api/payment/**
+      - id: PAYMENT-SERVICE
+        uri: lb://USER-SERVICE
+        predicates:
+        - Path=/api/users/**  

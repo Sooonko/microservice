@@ -1,0 +1,11 @@
+#default port is 8761 for eureka server
+server:
+  port: 8761
+#as this is discovery server, no need to register it with itself, hence give false for below properties
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    prefer-ip-address: true
+    instance-id: 

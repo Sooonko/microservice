@@ -1,0 +1,115 @@
+package com.orders.service.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.orders.dto.Payment;
+import com.orders.dto.TransactionResponse;
+import com.orders.entity.Order;
+import com.orders.entity.Product;
+import com.orders.service.OrderSvc;
+import lombok.extern.slf4j.Slf4j;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+@Service
+@Slf4j
+public class OrderSvcImpl implements OrderSvc {
+
+	private static final String ORDER_CREATE_SVC = "orderCreateSvc";
+
+	@Autowired
+	RestTemplate restTemplate;
+	
+	Map<String, List<Product>> cartMap = new HashMap<String, List<Product>>();
+
+	public List<Product> saveItemsInCart(Product product, String userId) {
+		log.info("Inside saveItemsInCart of OrderSvcImpl");
+		//save the cart items to DB
+		List<Product> cartItems;
+		if (cartMap.get(userId) == null) {
+			cartItems = new ArrayList<Product>();
+		} else {
+			cartItems = cartMap.get(userId);
+		}
+		cartItems.add(product);
+		cartMap.put(userId, cartItems);
+		return cartItems;
+	}
+
+	@Override
+	public List<Product> showCart(String userId) {
+		log.info("Inside showCart of OrderSvcImpl");
+		//fetch the cart items from DB
+		List<Product> cartItems;
+		if (cartMap.get(userId) == null) {
+			cartItems = new ArrayList<Product>();
+		} else {
+			cartItems = cartMap.get(userId);
+		}
+		return cartItems;
+	}
+	
+	
+	/*
+	 * The Resilience4j Aspects order is following: 
+	 * Retry ( CircuitBreaker (RateLimiter ( TimeLimiter ( Bulkhead ( Function ) ) ) ) ) 
+	 * so Retry is applied at the end (if needed).
+	 */
+	
+	@Override
+	@CircuitBreaker(name = ORDER_CREATE_SVC, fallbackMethod = "fallbackForCreateOrder")
+	//@Retry(name = ORDER_CREATE_SVC, fallbackMethod = "fallbackForCreateOrder")
+	//@RateLimiter(name = ORDER_CREATE_SVC, fallbackMethod = "fallbackForCreateOrder")
+	//@Bulkhead(name = ORDER_CREATE_SVC, fallbackMethod = "fallbackForCreateOrder")
+	//@TimeLimiter(name = ORDER_CREATE_SVC, fallbackMethod = "fallbackForCreateOrder")
+	public TransactionResponse createOrder(String userId) {
+		log.info("Inside createOrder of OrderSvcImpl");
+		//fetch the cart items from DB
+		List<Product> cartItems;
+		if (cartMap.get(userId) == null) {
+			cartItems = new ArrayList<Product>();
+		} else {
+			cartItems = cartMap.get(userId);
+		}
+		
+		Order order = new Order();
+		order.setOrderId(UUID.randomUUID().toString());
+		order.setCartItems(cartItems);
+		order.setPrice(1993);
+		
+		Payment payment = new Payment();
+		payment.setOrderId(order.getOrderId());
+		payment.setAmount(order.getPrice());
+		Payment paymentResponse = restTemplate.postForObject("http://PAYMENT-SERVICE/api/payment/doPayment/A", payment,
+				Payment.class);
+		
+		//Instead of restTemplate we can use webClientBuilder using spring reactive, which supports asynchronous operations
+		/*Payment paymentResponse = webClientBuilder.build().post()
+				.uri("http://PAYMENT-SERVICE/api/payment/doPayment/A", payment)
+				.retrieve()
+				.bodyToMono(Payment.class)
+				.block();*/
+
+		String response = paymentResponse.getPaymentStatus().equals("success")
+				? "payment processing successful and order placed"
+				: "there is a failure in payment api , order saved to cart";
+		log.info("response of  of payment api:- "+response);
+		return new TransactionResponse(order, paymentResponse.getAmount(), paymentResponse.getTransactionId(),
+				response);
+	}
+
+	public TransactionResponse fallbackForCreateOrder(String userId, Exception ex) {
+		log.info("Inside fallbackForCreateOrder, " + userId);
+		return new TransactionResponse(new Order(), 0000, "FAILED_TXN_ID", "Payment service is down");
+	}
+}

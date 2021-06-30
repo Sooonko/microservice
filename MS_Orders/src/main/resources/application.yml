@@ -1,0 +1,35 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: ORDERS-SERVICE
+  cloud:    loadbalancer:      ribbon:        enabled: false  zipkin:
+    enabled: false
+  sleuth:    enabled: false
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id:
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+  instances:
+        paymentSvc:
+            registerHealthIndicator: true
+            slidingWindowSize: 10
+            permittedNumberOfCallsInHalfOpenState: 3
+            slidingWindowType: COUNT_BASED
+            minimumNumberOfCalls: 20
+            waitDurationInOpenState: 50s
+            failureRateThreshold: 50
+            eventConsumerBufferSize: 10
+
+resilience4j.bulkhead:
+    instances:
+        paymentSvc:
+            maxConcurrentCalls: 10
+            maxWaitDuration: 10ms
+
