@@ -1,0 +1,51 @@
+package com.orders.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import io.github.resilience4j.common.bulkhead.configuration.BulkheadConfigCustomizer;
+import io.github.resilience4j.common.bulkhead.configuration.ThreadPoolBulkheadConfigCustomizer;
+import io.github.resilience4j.common.circuitbreaker.configuration.CircuitBreakerConfigCustomizer;
+import io.github.resilience4j.common.ratelimiter.configuration.RateLimiterConfigCustomizer;
+import io.github.resilience4j.common.retry.configuration.RetryConfigCustomizer;
+import io.github.resilience4j.common.timelimiter.configuration.TimeLimiterConfigCustomizer;
+
+@Configuration
+public class ResillienceConfig {
+
+	/*
+	 * we can override the config described in application.yml programmatically as
+	 * well using the below approach.
+	 */
+	private static final String ORDER_CREATE_SVC = "orderCreateSvc";
+
+	@Bean
+	public CircuitBreakerConfigCustomizer circuitBreakerCustomizer() {
+		return CircuitBreakerConfigCustomizer.of(ORDER_CREATE_SVC, builder -> builder.slidingWindowSize(5));
+	}
+
+	/*@Bean
+	public RetryConfigCustomizer retryConfigCustomizer() {
+		return RetryConfigCustomizer.of(ORDER_CREATE_SVC, builder -> builder.maxAttempts(2));
+	}
+
+	@Bean
+	public RateLimiterConfigCustomizer rateLimitCustomizer() {
+		return RateLimiterConfigCustomizer.of(ORDER_CREATE_SVC, builder -> builder.limitForPeriod(8));
+	}
+
+	@Bean
+	public BulkheadConfigCustomizer bulkHeadCustomizer() {
+		return BulkheadConfigCustomizer.of(ORDER_CREATE_SVC, builder -> builder.maxConcurrentCalls(8));
+	}
+
+	@Bean
+	public ThreadPoolBulkheadConfigCustomizer threadPoolBulkHeadConfig() {
+		return ThreadPoolBulkheadConfigCustomizer.of(ORDER_CREATE_SVC, builder -> builder.coreThreadPoolSize(2));
+	}
+
+	@Bean
+	public TimeLimiterConfigCustomizer timeLimiterConfig() {
+		return TimeLimiterConfigCustomizer.of(ORDER_CREATE_SVC, builder -> builder.cancelRunningFuture(true));
+	}*/
+}
